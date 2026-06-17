@@ -1,0 +1,209 @@
+CLASS zcl_country_api_2 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    METHODS get_countries_json
+        RETURNING VALUE(rv_json) TYPE string.
+
+    METHODS parse_countries_json
+      IMPORTING iv_json TYPE string
+      RETURNING VALUE(rt_countries) TYPE zcl_country_types=>ty_t_country.
+
+ENDCLASS.
+
+***********************************************************************************************************************************
+
+CLASS zcl_country_api_2 IMPLEMENTATION.
+
+    METHOD if_oo_adt_classrun~main.
+        DATA(lv_json) = me->get_countries_json(  ).
+
+        IF lv_json IS INITIAL.
+            out->write(  'No data received from the API.' ).
+
+        ELSE.
+
+            DATA(lt_countries) = me->parse_countries_json( iv_json = lv_json ).
+
+
+            out->write( |Parsed countries: { lines( lt_countries ) }| ).
+
+            LOOP AT lt_countries INTO DATA(ls_country).
+
+            DATA(lv_density) = ROUND(
+                val = ls_country-population_density
+                dec = 2 ).
+
+              out->write(
+                |Name: { ls_country-official_country_name } | &&
+                |** Capital: { ls_country-capital } | &&
+                |** Currency: { ls_country-currency } | &&
+                |** Population: { ls_country-population } | &&
+                |** Area (km2): { ls_country-area } | &&
+                |** Density: { lv_density }| ).
+            ENDLOOP.
+
+        ENDIF.
+
+    ENDMETHOD.
+
+    "********************************************************************************************************************
+
+    METHOD get_countries_json.
+
+        DATA lo_http_client TYPE REF TO if_web_http_client.
+        DATA lo_response    TYPE REF TO if_web_http_response.
+        DATA lv_url         TYPE string.
+        DATA lv_api_key     TYPE string.
+
+
+
+    "-----------------------------------------------------------------------------------------------------------------
+
+    "*************** URLS ARE HARDCODED HERE. PLEASE CHANGE THEM HERE **************
+
+        "lv_url = 'https://api.restcountries.com/countries/v5?limit=2'.
+        lv_url = 'https://api.restcountries.com/countries/v5/names.common/Portugal'.
+
+        lv_api_key = 'xxxxxxxx check the read me file for the key xxxxxxxxx'.
+
+    "-----------------------------------------------------------------------------------------------------------------
+
+
+
+        TRY.
+            lo_http_client = cl_web_http_client_manager=>create_by_http_destination(
+                                                            i_destination = cl_http_destination_provider=>create_by_url(
+                                                                                                                i_url = lv_url ) ).
+
+            lo_http_client->get_http_request(  )->set_header_field(
+                                                            i_name = 'Authorization'
+                                                            i_value = |Bearer { lv_api_key }| ).
+
+
+            lo_response = lo_http_client->execute( if_web_http_client=>get ).
+
+            rv_json = lo_response->get_text( ).
+
+            lo_http_client->close( ).
+
+          CATCH cx_web_http_client_error INTO DATA(lx_http).
+            rv_json = lx_http->get_text( ).
+
+          CATCH cx_http_dest_provider_error INTO DATA(lx_dest).
+            rv_json = lx_dest->get_text( ).
+
+        ENDTRY.
+
+    ENDMETHOD.
+
+
+  "*********************************************************
+
+METHOD parse_countries_json.
+
+  TYPES: BEGIN OF ty_raw_name,
+           official TYPE string,
+           common   TYPE string,
+         END OF ty_raw_name.
+
+  TYPES: BEGIN OF ty_raw_capital,
+           name TYPE string,
+         END OF ty_raw_capital.
+
+  TYPES: BEGIN OF ty_raw_currency,
+           code   TYPE string,
+           name   TYPE string,
+           symbol TYPE string,
+         END OF ty_raw_currency.
+
+  TYPES: BEGIN OF ty_raw_area,
+           kilometers TYPE decfloat34,
+           miles      TYPE decfloat34,
+         END OF ty_raw_area.
+
+  TYPES: BEGIN OF ty_raw_country,
+           names      TYPE ty_raw_name,
+           capitals   TYPE STANDARD TABLE OF ty_raw_capital WITH EMPTY KEY,
+           currencies TYPE STANDARD TABLE OF ty_raw_currency WITH EMPTY KEY,
+           population TYPE decfloat34,
+           area       TYPE ty_raw_area,
+         END OF ty_raw_country.
+
+  TYPES: BEGIN OF ty_raw_data,
+           objects TYPE STANDARD TABLE OF ty_raw_country WITH EMPTY KEY,
+         END OF ty_raw_data.
+
+  TYPES: BEGIN OF ty_raw_response,
+           data TYPE ty_raw_data,
+           meta TYPE string,
+         END OF ty_raw_response.
+
+  DATA ls_raw_response TYPE ty_raw_response.
+  DATA lt_result       TYPE zcl_country_types=>ty_t_country.
+  DATA ls_country      TYPE zcl_country_types=>ty_country.
+
+  CLEAR: ls_raw_response, lt_result.
+
+  TRY.
+      /ui2/cl_json=>deserialize(
+        EXPORTING
+          json = iv_json
+        CHANGING
+          data = ls_raw_response ).
+
+    CATCH cx_root.
+      RETURN.
+  ENDTRY.
+
+  IF ls_raw_response-data-objects IS INITIAL.
+    RETURN.
+  ENDIF.
+
+  LOOP AT ls_raw_response-data-objects INTO DATA(ls_raw_country).
+
+    CLEAR ls_country.
+
+    ls_country-official_country_name = ls_raw_country-names-official.
+
+    IF ls_raw_country-capitals IS NOT INITIAL.
+      READ TABLE ls_raw_country-capitals INTO DATA(ls_raw_capital) INDEX 1.
+      IF sy-subrc = 0.
+        ls_country-capital = ls_raw_capital-name.
+      ENDIF.
+    ENDIF.
+
+    IF ls_raw_country-currencies IS NOT INITIAL.
+      READ TABLE ls_raw_country-currencies INTO DATA(ls_raw_currency) INDEX 1.
+      IF sy-subrc = 0.
+        IF ls_raw_currency-code IS NOT INITIAL.
+          ls_country-currency = ls_raw_currency-code.
+        ELSEIF ls_raw_currency-name IS NOT INITIAL.
+          ls_country-currency = ls_raw_currency-name.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+
+    ls_country-population = ls_raw_country-population.
+    ls_country-area       = ls_raw_country-area-kilometers.
+
+    IF ls_country-area > 0.
+      ls_country-population_density = ls_country-population / ls_country-area.
+    ELSE.
+      ls_country-population_density = 0.
+    ENDIF.
+
+    APPEND ls_country TO lt_result.
+
+  ENDLOOP.
+
+  rt_countries = lt_result.
+
+ENDMETHOD.
+
+
+ENDCLASS.
