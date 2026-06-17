@@ -69,7 +69,7 @@ CLASS zcl_country_api_2 IMPLEMENTATION.
         "lv_url = 'https://api.restcountries.com/countries/v5?limit=2'.
         lv_url = 'https://api.restcountries.com/countries/v5/names.common/Portugal'.
 
-        lv_api_key = 'xxxxxxxx check the read me file for the key xxxxxxxxx'.
+        lv_api_key = 'xxxxxxxx key will be sent in the email xxxxxxxxx'.
 
     "-----------------------------------------------------------------------------------------------------------------
 
