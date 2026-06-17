@@ -78,13 +78,13 @@ Design Decision 1: The URL is hardcoded.
 	This way, the URL is there, the code gets the JSON raw response, and then it exposes the data 
 	via OData v4 later on, as requested. 
 	The code does not ask the user for the URL or any other indications. That would add an extra 
-	layer of complexity that I concluded it is probably beyond the scope of this challenge.
+	layer of complexity.
 
 Design Decision 2: There is no mid step where data is stored in a physical database.
 
 	Although this was my first approach idea, after some reading, I decided not to go down this route.
-	Once again, the goal here was to keep the solution simple and functional, and the true goal was to get the data and
-	expose it via OData V4.
+	Once again, the goal here was to keep the solution simple and functional, and the true goal was to get 
+	the data and expose it via OData V4.
 	Storing the data would add an extra layer of complexity.
 
 Design Decision 3: Since I did not go the physical database route, I went with creating a RAP custom entity.
@@ -99,6 +99,7 @@ Design Decision 3: Since I did not go the physical database route, I went with c
 ### PREREQUISITES
 
 To run this project you need:
+
 	- connection to a SAP ABAP ENVIRONMENT
 	- Eclipse with ABAP Development Tools (ADT)
 	
@@ -133,7 +134,9 @@ To run this project you need:
 
 5 - Configure the REST COUNTRIES API URL ---- USE THE KEY PROVIDED IN THE EMAIL
 
-  	Since the URL is hardcoded, you need to go to ZCL_COUNTRY_API_2 (line 65 - 74). Add/change the URL as needed.
+  	Since the URL is hardcoded, you need to go to ZCL_COUNTRY_API_2 (line 65 - 74).
+	Add/change the URL as needed.
+	
   	Ex: 'https://api.restcountries.com/countries/v5?limit=2'
   	Ex: 'https://api.restcountries.com/countries/v5/names.common/Portugal'
   	
@@ -154,7 +157,8 @@ To run this project you need:
 
 8 - Click on the link at the top : (...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/ and add Countries at the end.
 
-	  It should look like: (...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/Countries
+	  It should look like: 
+	  (...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/Countries
 
 
 9 - Loading the usrl, the result will look like: (depending on the URL you used)
