@@ -58,28 +58,31 @@ Population density (inhabitants/km2) = population / area
 The goal here was to keep the solution simple, well-structured and functional, as requested.
 
 
-1 - ZCL_COUNTRY_API_2 calls the REST Countries API and retrieves the raw JSON response.
-2 - The JSON response is parsed in ZCL_COUNTRY_API_2 into an ABAP internal table using the data structure defined in ZCL_Country_TYPES.
-3 - The parsed data is filtered to keep only the fields defined in ZCL_COUNTRY_TYPES.
-4 - The Density field is calculated in ZCL_COUNTRY_API_2.
-5 - ZCL_COUNTRY_QUERY implements IF_RAP_QUERY_PROVIDER and provides the country data to the RAP custom entity ZCE_COUNTRY.
-6 - The service definition ZUI_COUNTRY_SRV exposes the custome entity ZCE_COUNTRY as an OData entity.
-7 - The service binding ZUI_COUNTRY_O4 publishes the service as an OData V4 endpoint for external consumption.
+	1 - ZCL_COUNTRY_API_2 calls the REST Countries API and retrieves the raw JSON response.
+	2 - The JSON response is parsed in ZCL_COUNTRY_API_2 into an ABAP internal table using the data structure defined in ZCL_Country_TYPES.
+	3 - The parsed data is filtered to keep only the fields defined in ZCL_COUNTRY_TYPES.
+	4 - The Density field is calculated in ZCL_COUNTRY_API_2.
+	5 - ZCL_COUNTRY_QUERY implements IF_RAP_QUERY_PROVIDER and provides the country data to the RAP custom entity ZCE_COUNTRY.
+	6 - The service definition ZUI_COUNTRY_SRV exposes the custome entity ZCE_COUNTRY as an OData entity.
+	7 - The service binding ZUI_COUNTRY_O4 publishes the service as an OData V4 endpoint for external consumption.
 
 
 
 Design Decision 1: The URL is hardcoded.
+
 	Since the goal here was to keep the solution simple and functional, I kept the URL hardcoded.
 	This way, the URL is there, the code gets the JSON raw response, and then it exposes the data via OData v4 later on, as requested. 
 	The code does not ask the user for the URL or any other indications. That would add an extra layer of complexity that I concluded 
 	it is probably beyond the scope of this challenge.
 
 Design Decision 2: There is no mid step where data is stored in a physical database.
+
 	Although this was my first approach idea, after some reading, I decided not to go down this route.
 	Once again, the goal here was to keep the solution simple and functional, and the true goal was to get the data and expose it via OData V4.
 	Storing the data would add an extra layer of complexity.
 
 Design Decision 3: Since I did not go the physical database route, I went with creating a RAP custom entity.
+
 	This way, the request is fulfilled, and the focus in on the API integration and OData exposure.
 
 
