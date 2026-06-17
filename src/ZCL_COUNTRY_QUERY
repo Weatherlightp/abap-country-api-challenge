@@ -1,0 +1,81 @@
+CLASS zcl_country_query DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_rap_query_provider.
+
+ENDCLASS.
+
+CLASS zcl_country_query IMPLEMENTATION.
+
+  METHOD if_rap_query_provider~select.
+
+    DATA lt_countries TYPE zcl_country_types=>ty_t_country.
+    DATA lt_result    TYPE STANDARD TABLE OF zce_country WITH EMPTY KEY.
+    DATA lt_empty     TYPE STANDARD TABLE OF zce_country WITH EMPTY KEY.
+
+    DATA(lo_api) = NEW zcl_country_api_2( ).
+
+
+    
+    DATA(lv_json) = lo_api->get_countries_json( ).
+
+
+   
+    IF lv_json IS INITIAL.
+      io_response->set_data( lt_empty ).
+      io_response->set_total_number_of_records( 0 ).
+      RETURN.
+    ENDIF.
+
+
+    
+    lt_countries = lo_api->parse_countries_json( iv_json = lv_json ).
+
+
+    
+    LOOP AT lt_countries INTO DATA(ls_country).
+
+          APPEND VALUE zce_country(
+            official_country_name = ls_country-official_country_name
+            capital               = ls_country-capital
+            currency              = ls_country-currency
+            population            = ls_country-population
+            area                  = ls_country-area
+            population_density    = ROUND(
+                                      val = ls_country-population_density
+                                      dec = 2 ) ) TO lt_result.
+
+    ENDLOOP.
+
+
+
+    
+
+    DATA(lv_offset)    = io_request->get_paging( )->get_offset( ).
+    DATA(lv_page_size) = io_request->get_paging( )->get_page_size( ).
+
+    
+    IF lv_page_size = if_rap_query_paging=>page_size_unlimited.
+      lv_page_size = lines( lt_result ).
+    ENDIF.
+
+    
+    IF lv_offset > 0.
+      DELETE lt_result FROM 1 TO lv_offset.
+    ENDIF.
+
+    
+    IF lv_page_size < lines( lt_result ).
+      DELETE lt_result FROM lv_page_size + 1 TO lines( lt_result ).
+    ENDIF.
+
+    
+    io_response->set_data( lt_result ).
+    io_response->set_total_number_of_records( lines( lt_countries ) ).
+
+  ENDMETHOD.
+
+ENDCLASS.
