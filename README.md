@@ -113,10 +113,10 @@ To run this project you need:
 2 - Import the following ABAP objects from the repository into your package:
 		
     - ZCL_COUNTRY_TYPES
-		- ZCL_COUNTRY_API_2
-		- ZCL_COUNTRY_QUERY
-		- ZCE_COUNTRY (custom entity)
-		- ZUI_COUNTRY_SRV (service definition)
+	- ZCL_COUNTRY_API_2
+	- ZCL_COUNTRY_QUERY
+	- ZCE_COUNTRY (custom entity)
+	- ZUI_COUNTRY_SRV (service definition)
 
 
 3 - Activate all objects in the order shown above.
@@ -150,33 +150,33 @@ To run this project you need:
 
 7 - On the ZUI_COUNTRY_O4 window, click on Test. It will open a window in your browser.
 
-	  This window shows a lot of information, and you can even use the GET /COUNTRIES dropdown to generate responses.
-	  HOWEVER, since the URL is hardcoded, this will only search in what you defined in the URL. 
-	  So, if for example you used (...)limit=20, you will only be able to search the information in those 20 results.
+	This window shows a lot of information, and you can even use the GET /COUNTRIES dropdown to generate responses.
+	HOWEVER, since the URL is hardcoded, this will only search in what you defined in the URL. 
+	So, if for example you used (...)limit=20, you will only be able to search the information in those 20 results.
 
 
 8 - Click on the link at the top : (...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/ and add Countries at the end.
 
-	  It should look like: 
-	  (...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/Countries
+	It should look like: 
+	(...)/sap/opu/odata4/sap/zui_country_o4/srvd_a2x/sap/zui_country_srv/0001/Countries
 
 
 9 - Loading the usrl, the result will look like: (depending on the URL you used)
 
-        	{
-         	 "@odata.context": "$metadata#Countries",
-          	"@odata.metadataEtag": "W/\"20260615115920\"",
-         	 "value": [
-        	   {
-         	     "official_country_name": "Portuguese Republic",
-          	    "capital": "Lisbon",
-          	   "currency": "EUR",
-           	   "population": 10749635,
-            	  "area": 92090,
-           	   "population_density": 116.73
-          	  }
-         	 ]
-        	}
+	{
+	 "@odata.context": "$metadata#Countries",
+	"@odata.metadataEtag": "W/\"20260615115920\"",
+	 "value": [
+	   {
+		 "official_country_name": "Portuguese Republic",
+		"capital": "Lisbon",
+	   "currency": "EUR",
+	   "population": 10749635,
+		  "area": 92090,
+	   "population_density": 116.73
+	  }
+	 ]
+	}
 
 
 
