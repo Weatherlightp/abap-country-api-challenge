@@ -1,0 +1,4 @@
+@EndUserText.label: 'service definition country_api_2'
+define service ZUI_COUNTRY_SRV {
+  expose ZCE_COUNTRY as Countries;
+}
