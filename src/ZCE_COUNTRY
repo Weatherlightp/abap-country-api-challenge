@@ -1,0 +1,11 @@
+@EndUserText.label: 'Country API Custom Entity'
+@ObjectModel.query.implementedBy: 'ABAP:ZCL_COUNTRY_QUERY'
+define root custom entity ZCE_COUNTRY
+{
+  key official_country_name : abap.char(100);
+      capital               : abap.char(100);
+      currency              : abap.char(50);
+      population             : abap.decfloat34;
+      area                   : abap.decfloat34;
+      population_density     : abap.decfloat34;
+}
