@@ -1,0 +1,23 @@
+CLASS zcl_country_types DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+
+    TYPES:BEGIN OF ty_country,
+        official_country_name TYPE string,
+        capital               TYPE string,
+        currency              TYPE string,          
+        population            TYPE decfloat34,
+        area                  TYPE decfloat34,
+        population_density    TYPE decfloat34,
+        END OF ty_country.
+
+        TYPES ty_t_country TYPE STANDARD TABLE OF ty_country WITH EMPTY KEY.
+
+ENDCLASS.
+
+
+CLASS zcl_country_types IMPLEMENTATION.
+ENDCLASS.
