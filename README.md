@@ -83,7 +83,8 @@ Design Decision 1: The URL is hardcoded.
 Design Decision 2: There is no mid step where data is stored in a physical database.
 
 	Although this was my first approach idea, after some reading, I decided not to go down this route.
-	Once again, the goal here was to keep the solution simple and functional, and the true goal was to get the data and expose it via OData V4.
+	Once again, the goal here was to keep the solution simple and functional, and the true goal was to get the data and
+	expose it via OData V4.
 	Storing the data would add an extra layer of complexity.
 
 Design Decision 3: Since I did not go the physical database route, I went with creating a RAP custom entity.
